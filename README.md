@@ -6,6 +6,8 @@ A local voice and text assistant that runs entirely on your home machine. No clo
 
 Speak a query or type it, and Jarvis transcribes, thinks, and responds — either out loud or in text. Everything runs locally using Whisper for speech-to-text, Mistral 7B via Ollama for responses, and pyttsx3 for text-to-speech. Conversation history persists between sessions.
 
+I intentionally used a small model for running on small machines so it may feel limited at times, but it's still amazing software.
+
 ## Requirements
 
 - Python 3.10+
