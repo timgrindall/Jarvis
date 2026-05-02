@@ -1,0 +1,7 @@
+flask
+openai-whisper
+requests
+pyttsx3
+sounddevice
+pynput
+numpy
