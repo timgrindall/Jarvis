@@ -1,23 +1,30 @@
 # Jarvis
 
-A local voice and text assistant that runs entirely on your home machine. No cloud APIs required.
+A local voice and text assistant that runs entirely on your home machine. Named after the AI assistant in the Marvel Iron Man films.
 
-## How It Works
+No cloud AI required. Everything runs locally using Whisper for speech-to-text and Mistral 7B via Ollama for responses. ElevenLabs is supported for high quality voice output with automatic fallback to local TTS.
 
-Speak a query or type it, and Jarvis transcribes, thinks, and responds — either out loud or in text. Everything runs locally using Whisper for speech-to-text, Mistral 7B via Ollama for responses, and pyttsx3 for text-to-speech. Conversation history persists between sessions.
+---
 
-## Author Notes
+## Features
 
-I intentionally used a small model for running on small machines so it may feel limited at times, but it's still amazing software. This entire project was created using the free version of Claude.ai by Anthropic and started as simply as a hypothetical project which then became real when Claude asked, "Would you like me to create the files for this project?". A few iterations and user testing later, we got to version 5 as you see here.
+- 🎤 **Voice input** — hold SPACE to record, release to send
+- ⌨️ **Text input** — type queries directly in the terminal
+- 🧠 **Local LLM** — Mistral 7B via Ollama, no cloud AI required
+- 🔊 **ElevenLabs TTS** — high quality voice responses (optional, falls back to pyttsx3)
+- 💾 **Persistent memory** — conversation history saved between sessions
+- 🌐 **Web search** — optional SerpAPI integration for real-time information
+- 🔒 **Private** — audio and queries never leave your machine (unless using optional APIs)
 
-The amazing this about this piece of software is that no personal info is shared across the web. It all runs locally on your machine. I wish software like this could become the future of AI instead of being stuck with a subscription to a cloud provider.
+---
 
 ## Requirements
 
 - Python 3.10+
 - [Ollama](https://ollama.ai) installed and running
-- Mistral model pulled: `ollama pull mistral`
-- Recommend 8GB RAM or more and a fast processor
+- Mistral model: `ollama pull mistral`
+
+---
 
 ## Installation
 
@@ -27,18 +34,35 @@ cd jarvis
 pip install -r requirements.txt
 ```
 
+---
+
+## Configuration
+
+Create a `.env` file in the project folder:
+
+```
+# Required for ElevenLabs voice (optional - falls back to pyttsx3)
+ELEVENLABS_API_KEY=sk_your_key_here
+ELEVENLABS_VOICE_ID=JBFqnCBsd6RMkjVDRZzb
+
+# Required for web search (optional)
+SERPAPI_KEY=your_key_here
+```
+
+Both are optional — Jarvis works without any API keys using local TTS and Mistral's training data.
+
+---
+
 ## Usage
 
-Open three terminals:
-
 ```bash
-# Terminal 1
+# Terminal 1 - start Ollama
 ollama serve
 
-# Terminal 2
+# Terminal 2 - start Jarvis server
 python jarvis_server.py
 
-# Terminal 3
+# Terminal 3 - start Jarvis client
 python jarvis_client.py
 ```
 
@@ -49,29 +73,87 @@ Once the client is running, press **Enter** to activate, then:
 | `V` + Enter | Voice mode — hold SPACE to record, release to send |
 | `T` + Enter | Text mode — type queries, blank line or ESC to exit |
 | `S` + Enter | Standby |
-| `quit` | Exit |
+| `ESC` | Exit current mode, return to standby |
+| `quit` | Exit Jarvis |
 
-ESC exits voice or text mode and returns to standby.
+---
 
-## Configuration
+## Settings
 
-Settings are at the top of `jarvis_server.py`:
+Key settings at the top of `jarvis_server.py`:
 
 ```python
-OLLAMA_MODEL = "mistral"   # swap to "llama2" for better quality
-TOKEN_CAP    = 5000        # max conversation history tokens
+OLLAMA_MODEL = "mistral"   # swap to "phi" for faster but lower quality
+TOKEN_CAP    = 2000        # max conversation history tokens
 ```
 
-Conversation history is saved to `jarvis_memory.json`. To clear it:
+Response length is controlled by `num_predict` in `generate_response()`:
+
+```python
+"num_predict": 160   # increase for longer responses
+```
+
+---
+
+## Clearing Memory
+
+To wipe conversation history and start fresh, delete the memory file:
+
+```bash
+# Windows
+del jarvis_memory.json
+
+# Mac/Linux
+rm jarvis_memory.json
+```
+
+Or via the API while Jarvis is running:
 
 ```bash
 curl -X POST http://localhost:5000/memory/clear
 ```
 
+---
+
 ## Stack
 
-- [Whisper](https://github.com/openai/whisper) — speech to text
-- [Ollama](https://ollama.ai) + Mistral 7B — local LLM
-- [pyttsx3](https://github.com/nateshmbhat/pyttsx3) — text to speech
-- [Flask](https://flask.palletsprojects.com) — local server
-- [sounddevice](https://python-sounddevice.readthedocs.io) — audio capture
+| Component | Library | Notes |
+|-----------|---------|-------|
+| Speech to Text | [Whisper](https://github.com/openai/whisper) | Runs locally |
+| LLM | [Ollama](https://ollama.ai) + Mistral 7B | Runs locally |
+| Text to Speech | [ElevenLabs](https://elevenlabs.io) | Optional, falls back to pyttsx3 |
+| Web Search | [SerpAPI](https://serpapi.com) | Optional |
+| Audio I/O | [sounddevice](https://python-sounddevice.readthedocs.io) | Cross-platform |
+| Server | [Flask](https://flask.palletsprojects.com) | Separate server process |
+
+---
+
+## Hardware Notes
+
+Jarvis runs on CPU only. Response times vary by hardware:
+
+| Hardware | Response Time |
+|----------|--------------|
+| Laptop CPU (no GPU) | 20-60 seconds |
+| Desktop CPU | 10-30 seconds |
+| Dedicated GPU | 2-5 seconds |
+
+For faster responses on limited hardware, try `ollama pull phi` and set `OLLAMA_MODEL = "phi"`.
+
+---
+
+## Privacy
+
+- Voice recording and transcription happen entirely on your machine
+- Queries are sent to Ollama running locally
+- ElevenLabs receives only the text response for TTS (if API key is set)
+- SerpAPI receives only the search query (if API key is set)
+- Conversation history is stored locally in `jarvis_memory.json`
+
+---
+
+## Author Notes
+
+I intentionally used a small model for running on small machines so it may feel limited at times, but it's still amazing software. This entire project was created using the free version of Claude.ai by Anthropic and started as simply as a hypothetical project which then became real when Claude asked, "Would you like me to create the files for this project?". A few iterations and user testing later, we got to version 5 as you see here.
+
+The amazing thing about this piece of software is that no personal info is shared across the web when your using the fallback TTS. It all runs locally on your machine. I wish software like this could become the future of AI instead of being stuck with a subscription to a cloud provider.
