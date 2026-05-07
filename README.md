@@ -6,13 +6,18 @@ A local voice and text assistant that runs entirely on your home machine. No clo
 
 Speak a query or type it, and Jarvis transcribes, thinks, and responds — either out loud or in text. Everything runs locally using Whisper for speech-to-text, Mistral 7B via Ollama for responses, and pyttsx3 for text-to-speech. Conversation history persists between sessions.
 
-I intentionally used a small model for running on small machines so it may feel limited at times, but it's still amazing software.
+## Author Notes
+
+I intentionally used a small model for running on small machines so it may feel limited at times, but it's still amazing software. This entire project was created using the free version of Claude.ai by Anthropic and started as simply as a hypothetical project which then became real when Claude asked, "Would you like me to create the files for this project?". A few iterations and user testing later, we got to version 5 as you see here.
+
+The amazing this about this piece of software is that no personal info is shared across the web. It all runs locally on your machine. I wish software like this could become the future of AI instead of being stuck with a subscription to a cloud provider.
 
 ## Requirements
 
 - Python 3.10+
 - [Ollama](https://ollama.ai) installed and running
 - Mistral model pulled: `ollama pull mistral`
+- Recommend 8GB RAM or more and a fast processor
 
 ## Installation
 
